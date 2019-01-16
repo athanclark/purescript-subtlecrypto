@@ -1,5 +1,6 @@
 module Crypto.Subtle.Key.Derive
   ( deriveKey
+  , deriveBits
   , DeriveAlgorithm, ec, hkdf, pbkdf2
   , DeriveTargetAlgorithm, hmac, aes
   ) where
@@ -10,7 +11,7 @@ import Crypto.Subtle.EC (ECAlgorithm)
 import Crypto.Subtle.AES (AESAlgorithm, AESBitLength)
 
 import Prelude ((<<<), (<$))
-import Data.Function.Uncurried (Fn5, runFn5)
+import Data.Function.Uncurried (Fn3, Fn5, runFn3, runFn5)
 import Data.ArrayBuffer.Types (ArrayBuffer)
 import Data.Either (Either (..))
 import Effect.Promise (Promise, runPromise)
@@ -20,6 +21,7 @@ import Unsafe.Coerce (unsafeCoerce)
 
 
 foreign import deriveKeyImpl :: Fn5 DeriveAlgorithm CryptoKey DeriveTargetAlgorithm Boolean (Array CryptoKeyUsage) (Promise CryptoKey)
+foreign import deriveBitsImpl :: Fn3 DeriveAlgorithm CryptoKey Int (Promise ArrayBuffer)
 
 
 deriveKey :: DeriveAlgorithm
@@ -30,6 +32,13 @@ deriveKey :: DeriveAlgorithm
           -> Aff CryptoKey
 deriveKey a k t e u = makeAff \resolve ->
   nonCanceler <$ runPromise (resolve <<< Right) (resolve <<< Left) (runFn5 deriveKeyImpl a k t e u)
+
+deriveBits :: DeriveAlgorithm
+           -> CryptoKey -- ^ Base key
+           -> Int -- ^ Length in bits
+           -> Aff ArrayBuffer
+deriveBits a k l = makeAff \resolve ->
+  nonCanceler <$ runPromise (resolve <<< Right) (resolve <<< Left) (runFn3 deriveBitsImpl a k l)
 
 
 foreign import data DeriveAlgorithm :: Type
