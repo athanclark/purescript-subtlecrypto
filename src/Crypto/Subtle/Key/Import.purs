@@ -1,10 +1,9 @@
 module Crypto.Subtle.Key.Import
   ( importKey
-  , ImportFormat, raw, pkcs8, spki, jwk
   , ImportAlgorithm, rsa, ec, hmac, aes
   ) where
 
-import Crypto.Subtle.Key.Types (CryptoKey, CryptoKeyUsage)
+import Crypto.Subtle.Key.Types (CryptoKey, CryptoKeyUsage, ExternalFormat)
 import Crypto.Subtle.Hash (HashingFunction)
 import Crypto.Subtle.RSA (RSAAlgorithm)
 import Crypto.Subtle.EC (ECAlgorithm, ECCurve)
@@ -20,10 +19,10 @@ import Unsafe.Coerce (unsafeCoerce)
 
 
 
-foreign import importKeyImpl :: Fn5 ImportFormat ArrayBuffer ImportAlgorithm Boolean (Array CryptoKeyUsage) (Promise CryptoKey)
+foreign import importKeyImpl :: Fn5 ExternalFormat ArrayBuffer ImportAlgorithm Boolean (Array CryptoKeyUsage) (Promise CryptoKey)
 
 
-importKey :: ImportFormat
+importKey :: ExternalFormat
           -> ArrayBuffer -- ^ Key data
           -> ImportAlgorithm
           -> Boolean -- ^ Extractable
@@ -31,18 +30,6 @@ importKey :: ImportFormat
           -> Aff CryptoKey
 importKey f x a e u = makeAff \resolve ->
   nonCanceler <$ runPromise (resolve <<< Right) (resolve <<< Left) (runFn5 importKeyImpl f x a e u)
-
-
-newtype ImportFormat = ImportFormat String
-
-raw :: ImportFormat
-raw = ImportFormat "raw"
-pkcs8 :: ImportFormat
-pkcs8 = ImportFormat "pkcs8"
-spki :: ImportFormat
-spki = ImportFormat "spki"
-jwk :: ImportFormat
-jwk = ImportFormat "jwk"
 
 
 
