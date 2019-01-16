@@ -1,4 +1,4 @@
-module Crypto.Subtle.Hash where
+module Crypto.Subtle.Hash (HashingFunction, sha1, sha256, sha384, sha512, digest) where
 
 import Prelude ((<<<), (<$))
 import Data.ArrayBuffer.Types (ArrayBuffer)
