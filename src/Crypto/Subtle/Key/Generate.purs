@@ -1,14 +1,13 @@
 module Crypto.Subtle.Key.Generate
   ( generateKey
   , GenerateAlgorithm, exp65537, rsa, ec, hmac, aes
-  , AESBitLength, l128, l192, l256
   ) where
 
 import Crypto.Subtle.Key.Types (CryptoKey, CryptoKeyUsage)
 import Crypto.Subtle.Hash (HashingFunction)
 import Crypto.Subtle.RSA (RSAAlgorithm)
 import Crypto.Subtle.EC (ECAlgorithm, ECCurve)
-import Crypto.Subtle.AES (AESAlgorithm)
+import Crypto.Subtle.AES (AESAlgorithm, AESBitLength)
 
 import Prelude ((<<<), (<$))
 import Data.Function.Uncurried (Fn3, runFn3)
@@ -49,17 +48,6 @@ ec e c = unsafeCoerce {name: e, namedCurve: c}
 
 hmac :: HashingFunction -> GenerateAlgorithm
 hmac h = unsafeCoerce {name: "HMAC", hash: h}
-
-
-newtype AESBitLength = AESBitLength Int
-
-l128 :: AESBitLength
-l128 = AESBitLength 128
-l192 :: AESBitLength
-l192 = AESBitLength 192
-l256 :: AESBitLength
-l256 = AESBitLength 256
-
 
 aes :: AESAlgorithm -> AESBitLength -> GenerateAlgorithm
 aes a l = unsafeCoerce {name: a, length: l}
