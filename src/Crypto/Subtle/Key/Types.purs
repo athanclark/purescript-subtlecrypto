@@ -1,4 +1,4 @@
-module Crypto.Subtle.Key
+module Crypto.Subtle.Key.Types
   ( CryptoKeyType
   , CryptoKeyUsage
   , encrypt, decrypt, sign, verify, deriveKey, deriveBits, unwrapKey, wrapKey
