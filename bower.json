@@ -1,0 +1,23 @@
+{
+  "name": "purescript-subtlecrypto",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "output"
+  ],
+  "license": "BSD-3-Clause",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/athanclark/purescript-subtlecrypto.git"
+  },
+  "dependencies": {
+    "purescript-prelude": "^4.1.0",
+    "purescript-arraybuffer-types": "^2.0.0",
+    "purescript-aff": "^5.1.0",
+    "purescript-promises": "^3.0.0"
+  },
+  "devDependencies": {
+    "purescript-psci-support": "^4.0.0"
+  }
+}
