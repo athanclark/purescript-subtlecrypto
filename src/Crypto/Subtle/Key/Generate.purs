@@ -1,9 +1,11 @@
 module Crypto.Subtle.Key.Generate
-  ( generateKey
-  , GenerateAlgorithm, exp65537, rsa, ec, hmac, aes
+  ( generateKey, generateKeyPair
+  , AsymmetricAlgorithm, rsa, ec
+  , SymmetricAlgorithm, hmac, aes
+  , exp65537
   ) where
 
-import Crypto.Subtle.Key.Types (CryptoKey, CryptoKeyUsage)
+import Crypto.Subtle.Key.Types (CryptoKey, CryptoKeyPair, CryptoKeyUsage)
 import Crypto.Subtle.Hash (HashingFunction)
 import Crypto.Subtle.Constants.RSA (RSAAlgorithm)
 import Crypto.Subtle.Constants.EC (ECAlgorithm, ECCurve)
@@ -19,18 +21,28 @@ import Unsafe.Coerce (unsafeCoerce)
 
 
 
-foreign import generateKeyImpl :: Fn3 GenerateAlgorithm Boolean (Array CryptoKeyUsage) (Promise CryptoKey)
+foreign import generateKeyImpl :: forall a b. Fn3 a Boolean (Array CryptoKeyUsage) (Promise b)
 
 
-generateKey :: GenerateAlgorithm
+-- | Generate a symmetric key
+generateKey :: SymmetricAlgorithm
             -> Boolean -- ^ Extractable
             -> Array CryptoKeyUsage
             -> Aff CryptoKey
 generateKey a e u = makeAff \resolve ->
   nonCanceler <$ runPromise (resolve <<< Right) (resolve <<< Left) (runFn3 generateKeyImpl a e u)
 
+-- | Generate an asymmetric keypair
+generateKeyPair :: AsymmetricAlgorithm
+                -> Boolean -- ^ Extractable
+                -> Array CryptoKeyUsage
+                -> Aff CryptoKeyPair
+generateKeyPair a e u = makeAff \resolve ->
+  nonCanceler <$ runPromise (resolve <<< Right) (resolve <<< Left) (runFn3 generateKeyImpl a e u)
 
-foreign import data GenerateAlgorithm :: Type
+
+foreign import data SymmetricAlgorithm :: Type
+foreign import data AsymmetricAlgorithm :: Type
 
 
 foreign import exp65537 :: Uint8Array
@@ -40,16 +52,16 @@ rsa :: RSAAlgorithm
     -> Int -- ^ Modulus length. Should be at least 2048, or 4096 according to some bozo
     -> Uint8Array -- ^ Public exponent. Just use `exp65537`.
     -> HashingFunction
-    -> GenerateAlgorithm
+    -> AsymmetricAlgorithm
 rsa r l e h = unsafeCoerce {name: r, modulusLength: l, publicExponent: e, hash: h}
 
-ec :: ECAlgorithm -> ECCurve -> GenerateAlgorithm
+ec :: ECAlgorithm -> ECCurve -> AsymmetricAlgorithm
 ec e c = unsafeCoerce {name: e, namedCurve: c}
 
-hmac :: HashingFunction -> GenerateAlgorithm
+hmac :: HashingFunction -> SymmetricAlgorithm
 hmac h = unsafeCoerce {name: "HMAC", hash: h}
 
 aes :: AESAlgorithm
     -> AESBitLength
-    -> GenerateAlgorithm
+    -> SymmetricAlgorithm
 aes a l = unsafeCoerce {name: a, length: l}

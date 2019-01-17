@@ -1,8 +1,9 @@
 module Test.Main where
 
-import Crypto.Subtle.Key.Types (allUsages)
-import Crypto.Subtle.Key.Generate (generateKey, aes, hmac, ec, rsa)
+import Crypto.Subtle.Key.Types (allUsages, CryptoKeyPair (..))
+import Crypto.Subtle.Key.Generate (generateKey, generateKeyPair, aes, hmac, ec, rsa, exp65537)
 import Crypto.Subtle.Constants.AES as AES
+import Crypto.Subtle.Constants.RSA as RSA
 import Crypto.Subtle.Constants.EC as EC
 import Crypto.Subtle.Hash as Hash
 
@@ -57,19 +58,59 @@ main = do
             log' "  - SHA-512"
             log' (unsafeCoerce k)
     do  let genEC alg = do
-              do  k <- generateKey (ec alg EC.p256) true allUsages
+              do  CryptoKeyPair {privateKey,publicKey} <- generateKeyPair (ec alg EC.p256) true allUsages
                   log' "  - P-256"
-                  log' (unsafeCoerce k)
-              do  k <- generateKey (ec alg EC.p384) true allUsages
+                  log' "    - privateKey"
+                  log' (unsafeCoerce privateKey)
+                  log' "    - publicKey"
+                  log' (unsafeCoerce publicKey)
+              do  CryptoKeyPair {privateKey,publicKey} <- generateKeyPair (ec alg EC.p384) true allUsages
                   log' "  - P-384"
-                  log' (unsafeCoerce k)
-              do  k <- generateKey (ec alg EC.p521) true allUsages
+                  log' "    - privateKey"
+                  log' (unsafeCoerce privateKey)
+                  log' "    - publicKey"
+                  log' (unsafeCoerce publicKey)
+              do  CryptoKeyPair {privateKey,publicKey} <- generateKeyPair (ec alg EC.p521) true allUsages
                   log' "  - P-521"
-                  log' (unsafeCoerce k)
+                  log' "    - privateKey"
+                  log' (unsafeCoerce privateKey)
+                  log' "    - publicKey"
+                  log' (unsafeCoerce publicKey)
         log' "- ECDSA"
         genEC EC.ecdsa
         log' "- ECDH"
         genEC EC.ecdh
+    do  let genRSA alg = do
+              do  CryptoKeyPair {privateKey,publicKey} <- generateKeyPair (rsa alg 2048 exp65537 Hash.sha1) true allUsages
+                  log' "  - SHA-1"
+                  log' "    - privateKey"
+                  log' (unsafeCoerce privateKey)
+                  log' "    - publicKey"
+                  log' (unsafeCoerce publicKey)
+              do  CryptoKeyPair {privateKey,publicKey} <- generateKeyPair (rsa alg 2048 exp65537 Hash.sha256) true allUsages
+                  log' "  - SHA-256"
+                  log' "    - privateKey"
+                  log' (unsafeCoerce privateKey)
+                  log' "    - publicKey"
+                  log' (unsafeCoerce publicKey)
+              do  CryptoKeyPair {privateKey,publicKey} <- generateKeyPair (rsa alg 2048 exp65537 Hash.sha384) true allUsages
+                  log' "  - SHA-384"
+                  log' "    - privateKey"
+                  log' (unsafeCoerce privateKey)
+                  log' "    - publicKey"
+                  log' (unsafeCoerce publicKey)
+              do  CryptoKeyPair {privateKey,publicKey} <- generateKeyPair (rsa alg 2048 exp65537 Hash.sha512) true allUsages
+                  log' "  - SHA-512"
+                  log' "    - privateKey"
+                  log' (unsafeCoerce privateKey)
+                  log' "    - publicKey"
+                  log' (unsafeCoerce publicKey)
+        log' "- RSASSA-PKCS1-v1_5"
+        genRSA RSA.rsaPKCS1
+        log' "- RSA-PSS"
+        genRSA RSA.rsaPSS
+        log' "- RSA-OAEP"
+        genRSA RSA.rsaOAEP
 
 
 log' :: String -> Aff Unit

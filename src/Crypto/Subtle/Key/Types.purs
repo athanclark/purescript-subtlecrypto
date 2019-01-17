@@ -6,6 +6,7 @@ module Crypto.Subtle.Key.Types
   , CryptoKey
   , getType, getExtractable, getAlgorithm, getUsages
   , exportKey
+  , CryptoKeyPair (..)
   , ExternalFormat, raw, pkcs8, spki, jwk
   ) where
 
@@ -17,6 +18,7 @@ import Data.ArrayBuffer.Types (ArrayBuffer)
 import Foreign (Foreign)
 import Effect.Aff (Aff, makeAff, nonCanceler)
 import Effect.Promise (Promise, runPromise)
+import Unsafe.Coerce (unsafeCoerce)
 
 
 -- TODO enumerate different key types - public, secret, etc.
@@ -48,25 +50,27 @@ allUsages = [encrypt, decrypt, sign, verify, deriveKey, deriveBits, wrapKey, unw
 
 
 
-newtype CryptoKey = CryptoKey
-  { "type" :: CryptoKeyType
-  , extractable :: Boolean
-  , algorithm :: Foreign
-  , usages :: Array CryptoKeyUsage
-  }
+foreign import data CryptoKey :: Type
 
 
 getType :: CryptoKey -> CryptoKeyType
-getType (CryptoKey r) = r."type"
+getType r = (unsafeCoerce r)."type"
 
 getExtractable :: CryptoKey -> Boolean
-getExtractable (CryptoKey r) = r.extractable
+getExtractable r = (unsafeCoerce r).extractable
 
 getAlgorithm :: CryptoKey -> Foreign
-getAlgorithm (CryptoKey r) = r.algorithm
+getAlgorithm r = (unsafeCoerce r).algorithm
 
 getUsages :: CryptoKey -> Array CryptoKeyUsage
-getUsages (CryptoKey r) = r.usages
+getUsages r = (unsafeCoerce r).usages
+
+
+newtype CryptoKeyPair = CryptoKeyPair
+  { privateKey :: CryptoKey
+  , publicKey :: CryptoKey
+  }
+
 
 
 
