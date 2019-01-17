@@ -1,3 +1,5 @@
 "use strict";
 
-exports.importKeyImpl = crypto.subtle.importKey;
+exports.importKeyImpl = function importKeyImpl (f,x,a,e,u) {
+    return crypto.subtle.importKey(f,x,a,e,u);
+};

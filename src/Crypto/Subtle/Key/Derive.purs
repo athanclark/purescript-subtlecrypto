@@ -7,8 +7,8 @@ module Crypto.Subtle.Key.Derive
 
 import Crypto.Subtle.Key.Types (CryptoKey, CryptoKeyUsage)
 import Crypto.Subtle.Hash (HashingFunction)
-import Crypto.Subtle.EC (ECAlgorithm)
-import Crypto.Subtle.AES (AESAlgorithm, AESBitLength)
+import Crypto.Subtle.Constants.EC (ECAlgorithm)
+import Crypto.Subtle.Constants.AES (AESAlgorithm, AESBitLength)
 
 import Prelude ((<<<), (<$))
 import Data.Function.Uncurried (Fn3, Fn5, runFn3, runFn5)

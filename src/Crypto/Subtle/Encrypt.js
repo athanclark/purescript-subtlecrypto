@@ -1,4 +1,8 @@
 "use strict";
 
-exports.encryptImpl = crypto.subtle.encrypt;
-exports.decryptImpl = crypto.subtle.decrypt;
+exports.encryptImpl = function encryptImpl (a,k,x) {
+    return crypto.subtle.encrypt(a,k,x);
+};
+exports.decryptImpl = function decryptImpl (a,k,x) {
+    return crypto.subtle.decrypt(a,k,x);
+};

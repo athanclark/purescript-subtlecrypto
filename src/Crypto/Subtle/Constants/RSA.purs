@@ -1,4 +1,4 @@
-module Crypto.Subtle.RSA
+module Crypto.Subtle.Constants.RSA
   ( RSAAlgorithm, rsaPKCS1, rsaPSS, rsaOAEP
   ) where
 

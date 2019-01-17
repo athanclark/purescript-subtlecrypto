@@ -1,4 +1,4 @@
-module Crypto.Subtle.AES
+module Crypto.Subtle.Constants.AES
   ( AESAlgorithm, aesCTR, aesCBC, aesGCM, aesKW
   , AESBitLength, l128, l192, l256
   , AESTagLength, t32, t64, t96, t104, t112, t120, t128

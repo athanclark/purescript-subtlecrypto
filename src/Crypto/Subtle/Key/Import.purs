@@ -5,9 +5,9 @@ module Crypto.Subtle.Key.Import
 
 import Crypto.Subtle.Key.Types (CryptoKey, CryptoKeyUsage, ExternalFormat)
 import Crypto.Subtle.Hash (HashingFunction)
-import Crypto.Subtle.RSA (RSAAlgorithm)
-import Crypto.Subtle.EC (ECAlgorithm, ECCurve)
-import Crypto.Subtle.AES (AESAlgorithm)
+import Crypto.Subtle.Constants.RSA (RSAAlgorithm)
+import Crypto.Subtle.Constants.EC (ECAlgorithm, ECCurve)
+import Crypto.Subtle.Constants.AES (AESAlgorithm)
 
 import Prelude ((<<<), (<$))
 import Data.Function.Uncurried (Fn5, runFn5)

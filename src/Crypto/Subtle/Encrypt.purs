@@ -4,7 +4,7 @@ module Crypto.Subtle.Encrypt
   ) where
 
 import Crypto.Subtle.Key.Types (CryptoKey)
-import Crypto.Subtle.AES (AESTagLength)
+import Crypto.Subtle.Constants.AES (AESTagLength)
 
 import Prelude ((<<<), (<$))
 import Data.Function.Uncurried (Fn3, runFn3)

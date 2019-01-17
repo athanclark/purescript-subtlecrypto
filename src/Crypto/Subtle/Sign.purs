@@ -1,5 +1,5 @@
 module Crypto.Subtle.Sign
-  ( sign
+  ( sign, verify
   , SignAlgorithm, rsaPKCS1, rsaPSS, ecdsa, hmac
   ) where
 
@@ -7,7 +7,7 @@ import Crypto.Subtle.Key.Types (CryptoKey)
 import Crypto.Subtle.Hash (HashingFunction)
 
 import Prelude ((<<<), (<$))
-import Data.Function.Uncurried (Fn3, runFn3)
+import Data.Function.Uncurried (Fn3, Fn4, runFn3, runFn4)
 import Data.Either (Either (..))
 import Data.ArrayBuffer.Types (ArrayBuffer)
 import Effect.Promise (Promise, runPromise)
@@ -41,3 +41,14 @@ sign :: SignAlgorithm
      -> Aff ArrayBuffer
 sign a k x = makeAff \resolve ->
   nonCanceler <$ runPromise (resolve <<< Right) (resolve <<< Left) (runFn3 signImpl a k x)
+
+
+foreign import verifyImpl :: Fn4 SignAlgorithm CryptoKey ArrayBuffer ArrayBuffer (Promise Boolean)
+
+verify :: SignAlgorithm
+       -> CryptoKey
+       -> ArrayBuffer -- ^ Signature
+       -> ArrayBuffer -- ^ Subject data
+       -> Aff Boolean
+verify a k s x = makeAff \resolve ->
+  nonCanceler <$ runPromise (resolve <<< Right) (resolve <<< Left) (runFn4 verifyImpl a k s x)

@@ -1,3 +1,5 @@
 "use strict";
 
-exports.exportKeyImpl = crypto.subtle.exportKey;
+exports.exportKeyImpl = function exportKeyImpl (f,x) {
+    return crypto.subtle.exportKey(f,x);
+};

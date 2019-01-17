@@ -2,6 +2,7 @@ module Crypto.Subtle.Key.Types
   ( CryptoKeyType
   , CryptoKeyUsage
   , encrypt, decrypt, sign, verify, deriveKey, deriveBits, unwrapKey, wrapKey
+  , allUsages
   , CryptoKey
   , getType, getExtractable, getAlgorithm, getUsages
   , exportKey
@@ -41,6 +42,9 @@ wrapKey    = CryptoKeyUsage "wrapKey"
 unwrapKey :: CryptoKeyUsage
 unwrapKey  = CryptoKeyUsage "unwrapKey"
 
+
+allUsages :: Array CryptoKeyUsage
+allUsages = [encrypt, decrypt, sign, verify, deriveKey, deriveBits, wrapKey, unwrapKey]
 
 
 
