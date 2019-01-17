@@ -1,6 +1,6 @@
 module Test.Main where
 
-import Crypto.Subtle.Key.Types (allUsages, CryptoKeyPair (..))
+import Crypto.Subtle.Key.Types (allUsages, CryptoKeyPair (..), exportKey, raw)
 import Crypto.Subtle.Key.Generate (generateKey, generateKeyPair, aes, hmac, ec, rsa, exp65537)
 import Crypto.Subtle.Constants.AES as AES
 import Crypto.Subtle.Constants.RSA as RSA
@@ -27,13 +27,13 @@ main = do
   runAff_ resolve do
     log' "Generating Keys..."
     do  let genAES mode = do
-              do  k <- generateKey (aes mode AES.l128) true allUsages
+              do  k <- exportKey raw =<< generateKey (aes mode AES.l128) true allUsages
                   log' "  - 128"
                   log' (unsafeCoerce k)
-              do  k <- generateKey (aes mode AES.l192) true allUsages
+              do  k <- exportKey raw =<< generateKey (aes mode AES.l192) true allUsages
                   log' "  - 192"
                   log' (unsafeCoerce k)
-              do  k <- generateKey (aes mode AES.l256) true allUsages
+              do  k <- exportKey raw =<< generateKey (aes mode AES.l256) true allUsages
                   log' "  - 256"
                   log' (unsafeCoerce k)
         log' "- AES-CTR"
@@ -45,16 +45,16 @@ main = do
         log' "- AES-KW"
         genAES AES.aesKW
     do  log' "HMAC"
-        do  k <- generateKey (hmac Hash.sha1) true allUsages
+        do  k <- exportKey raw =<< generateKey (hmac Hash.sha1) true allUsages
             log' "  - SHA-1"
             log' (unsafeCoerce k)
-        do  k <- generateKey (hmac Hash.sha256) true allUsages
+        do  k <- exportKey raw =<< generateKey (hmac Hash.sha256) true allUsages
             log' "  - SHA-256"
             log' (unsafeCoerce k)
-        do  k <- generateKey (hmac Hash.sha384) true allUsages
+        do  k <- exportKey raw =<< generateKey (hmac Hash.sha384) true allUsages
             log' "  - SHA-384"
             log' (unsafeCoerce k)
-        do  k <- generateKey (hmac Hash.sha512) true allUsages
+        do  k <- exportKey raw =<< generateKey (hmac Hash.sha512) true allUsages
             log' "  - SHA-512"
             log' (unsafeCoerce k)
     do  let genEC alg = do
@@ -63,19 +63,22 @@ main = do
                   log' "    - privateKey"
                   log' (unsafeCoerce privateKey)
                   log' "    - publicKey"
-                  log' (unsafeCoerce publicKey)
+                  publicKey' <- exportKey raw publicKey
+                  log' (unsafeCoerce publicKey')
               do  CryptoKeyPair {privateKey,publicKey} <- generateKeyPair (ec alg EC.p384) true allUsages
                   log' "  - P-384"
                   log' "    - privateKey"
                   log' (unsafeCoerce privateKey)
                   log' "    - publicKey"
-                  log' (unsafeCoerce publicKey)
+                  publicKey' <- exportKey raw publicKey
+                  log' (unsafeCoerce publicKey')
               do  CryptoKeyPair {privateKey,publicKey} <- generateKeyPair (ec alg EC.p521) true allUsages
                   log' "  - P-521"
                   log' "    - privateKey"
                   log' (unsafeCoerce privateKey)
                   log' "    - publicKey"
-                  log' (unsafeCoerce publicKey)
+                  publicKey' <- exportKey raw publicKey
+                  log' (unsafeCoerce publicKey')
         log' "- ECDSA"
         genEC EC.ecdsa
         log' "- ECDH"
@@ -86,25 +89,25 @@ main = do
                   log' "    - privateKey"
                   log' (unsafeCoerce privateKey)
                   log' "    - publicKey"
-                  log' (unsafeCoerce publicKey)
+                  log' (unsafeCoerce publicKey')
               do  CryptoKeyPair {privateKey,publicKey} <- generateKeyPair (rsa alg 2048 exp65537 Hash.sha256) true allUsages
                   log' "  - SHA-256"
                   log' "    - privateKey"
                   log' (unsafeCoerce privateKey)
                   log' "    - publicKey"
-                  log' (unsafeCoerce publicKey)
+                  log' (unsafeCoerce publicKey')
               do  CryptoKeyPair {privateKey,publicKey} <- generateKeyPair (rsa alg 2048 exp65537 Hash.sha384) true allUsages
                   log' "  - SHA-384"
                   log' "    - privateKey"
                   log' (unsafeCoerce privateKey)
                   log' "    - publicKey"
-                  log' (unsafeCoerce publicKey)
+                  log' (unsafeCoerce publicKey')
               do  CryptoKeyPair {privateKey,publicKey} <- generateKeyPair (rsa alg 2048 exp65537 Hash.sha512) true allUsages
                   log' "  - SHA-512"
                   log' "    - privateKey"
                   log' (unsafeCoerce privateKey)
                   log' "    - publicKey"
-                  log' (unsafeCoerce publicKey)
+                  log' (unsafeCoerce publicKey')
         log' "- RSASSA-PKCS1-v1_5"
         genRSA RSA.rsaPKCS1
         log' "- RSA-PSS"

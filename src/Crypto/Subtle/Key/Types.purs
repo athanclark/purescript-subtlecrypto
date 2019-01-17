@@ -1,5 +1,6 @@
 module Crypto.Subtle.Key.Types
   ( CryptoKeyType
+  , secret, public, private
   , CryptoKeyUsage
   , encrypt, decrypt, sign, verify, deriveKey, deriveBits, unwrapKey, wrapKey
   , allUsages
@@ -11,7 +12,7 @@ module Crypto.Subtle.Key.Types
   ) where
 
 
-import Prelude ((<<<), (<$))
+import Prelude ((<<<), (<$), class Eq)
 import Data.Either (Either (..))
 import Data.Function.Uncurried (Fn2, runFn2)
 import Data.ArrayBuffer.Types (ArrayBuffer)
@@ -24,7 +25,19 @@ import Unsafe.Coerce (unsafeCoerce)
 -- TODO enumerate different key types - public, secret, etc.
 newtype CryptoKeyType = CryptoKeyType String
 
+derive newtype instance eqCryptoKeyType :: Eq CryptoKeyType
+
+secret :: CryptoKeyType
+secret = CryptoKeyType "secret"
+public :: CryptoKeyType
+public = CryptoKeyType "public"
+private :: CryptoKeyType
+private = CryptoKeyType "private"
+
+
 newtype CryptoKeyUsage = CryptoKeyUsage String
+
+derive newtype instance eqCryptoKeyUsage :: Eq CryptoKeyUsage
 
 
 encrypt :: CryptoKeyUsage
@@ -75,6 +88,8 @@ newtype CryptoKeyPair = CryptoKeyPair
 
 
 newtype ExternalFormat = ExternalFormat String
+
+derive newtype instance eqExternalFormat :: Eq ExternalFormat
 
 raw :: ExternalFormat
 raw = ExternalFormat "raw"

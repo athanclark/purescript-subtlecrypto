@@ -1,6 +1,6 @@
 module Crypto.Subtle.Hash (HashingFunction, sha1, sha256, sha384, sha512, digest) where
 
-import Prelude ((<<<), (<$))
+import Prelude ((<<<), (<$), class Eq)
 import Data.ArrayBuffer.Types (ArrayBuffer)
 import Data.Function.Uncurried (Fn2, runFn2)
 import Data.Either (Either (..))
@@ -10,6 +10,8 @@ import Effect.Aff (Aff, makeAff, nonCanceler)
 
 
 newtype HashingFunction = HashingFunction String
+
+derive newtype instance eqHashingFunction :: Eq HashingFunction
 
 sha1 :: HashingFunction
 sha1 = HashingFunction "SHA-1"
