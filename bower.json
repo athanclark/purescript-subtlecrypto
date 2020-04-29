@@ -12,7 +12,6 @@
     "url": "https://github.com/athanclark/purescript-subtlecrypto.git"
   },
   "dependencies": {
-    "purescript-prelude": "^4.1.0",
     "purescript-arraybuffer-types": "^2.0.0",
     "purescript-aff": "^5.1.0",
     "purescript-promises": "^3.0.0",
