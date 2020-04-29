@@ -89,25 +89,25 @@ main = do
                   log' "    - privateKey"
                   log' (unsafeCoerce privateKey)
                   log' "    - publicKey"
-                  log' (unsafeCoerce publicKey')
+                  log' (unsafeCoerce publicKey)
               do  CryptoKeyPair {privateKey,publicKey} <- generateKeyPair (rsa alg 2048 exp65537 Hash.sha256) true allUsages
                   log' "  - SHA-256"
                   log' "    - privateKey"
                   log' (unsafeCoerce privateKey)
                   log' "    - publicKey"
-                  log' (unsafeCoerce publicKey')
+                  log' (unsafeCoerce publicKey)
               do  CryptoKeyPair {privateKey,publicKey} <- generateKeyPair (rsa alg 2048 exp65537 Hash.sha384) true allUsages
                   log' "  - SHA-384"
                   log' "    - privateKey"
                   log' (unsafeCoerce privateKey)
                   log' "    - publicKey"
-                  log' (unsafeCoerce publicKey')
+                  log' (unsafeCoerce publicKey)
               do  CryptoKeyPair {privateKey,publicKey} <- generateKeyPair (rsa alg 2048 exp65537 Hash.sha512) true allUsages
                   log' "  - SHA-512"
                   log' "    - privateKey"
                   log' (unsafeCoerce privateKey)
                   log' "    - publicKey"
-                  log' (unsafeCoerce publicKey')
+                  log' (unsafeCoerce publicKey)
         log' "- RSASSA-PKCS1-v1_5"
         genRSA RSA.rsaPKCS1
         log' "- RSA-PSS"

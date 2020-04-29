@@ -1,7 +1,6 @@
 #!/bin/bash
 
-pulp build && \
-    pulp test
+spago build
 echo "Bundling..."
-purs bundle output/**/*.js -m Test.Main --main Test.Main > test.browser.js
+spago bundle-app -m Test.Main -t test.browser.js
 echo "Bundled."
