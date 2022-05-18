@@ -3,38 +3,39 @@ module Crypto.Subtle.Encrypt
   , EncryptAlgorithm, rsaOAEP, aesCTR, aesCBC, aesGCM, aesKW
   ) where
 
-import Crypto.Subtle.Key.Types (CryptoKey)
+import Control.Promise (Promise, toAff')
 import Crypto.Subtle.Constants.AES (AESTagLength)
-
-import Prelude ((<<<), (<$))
-import Data.Function.Uncurried (Fn3, runFn3)
-import Data.Tuple (Tuple (..))
-import Data.Maybe (Maybe (..))
-import Data.Either (Either (..))
+import Crypto.Subtle.Key.Types (CryptoKey, errorFromDOMException)
 import Data.ArrayBuffer.Types (ArrayBuffer)
-import Effect.Promise (Promise, runPromise)
-import Effect.Aff (Aff, makeAff, nonCanceler)
+import Data.Function.Uncurried (Fn3, runFn3)
+import Data.Maybe (Maybe(..))
+import Data.Tuple (Tuple(..))
+import Effect.Aff (Aff)
 import Unsafe.Coerce (unsafeCoerce)
 
 
 
 foreign import data EncryptAlgorithm :: Type
 
+-- | https://developer.mozilla.org/en-US/docs/Web/API/RsaOaepParams
 rsaOAEP :: Maybe ArrayBuffer -- ^ Label
         -> EncryptAlgorithm
 rsaOAEP mL = case mL of
   Nothing -> unsafeCoerce {name: "RSA_OAEP"}
   Just l -> unsafeCoerce {name: "RSA_OAEP", label: l}
 
+-- | https://developer.mozilla.org/en-US/docs/Web/API/AesCtrParams
 aesCTR :: ArrayBuffer -- ^ Counter
        -> Int -- ^ Counter length
        -> EncryptAlgorithm
 aesCTR c l = unsafeCoerce {name: "AES-CTR", counter: c, length: l}
 
+-- | https://developer.mozilla.org/en-US/docs/Web/API/AesCbcParams
 aesCBC :: ArrayBuffer -- ^ Initialization vector
        -> EncryptAlgorithm
 aesCBC i = unsafeCoerce {name: "AES-CBC", iv: i}
 
+-- | https://developer.mozilla.org/en-US/docs/Web/API/AesGcmParams
 aesGCM :: ArrayBuffer -- ^ Initialization vector
        -> Maybe ArrayBuffer -- ^ Additional data
        -> Maybe AESTagLength -- ^ Tag length
@@ -53,20 +54,20 @@ aesKW = unsafeCoerce {name: "AES-KW"}
 
 foreign import encryptImpl :: Fn3 EncryptAlgorithm CryptoKey ArrayBuffer (Promise ArrayBuffer)
 
+-- | https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/encrypt
 encrypt :: EncryptAlgorithm
         -> CryptoKey
         -> ArrayBuffer
         -> Aff ArrayBuffer
-encrypt a k x = makeAff \resolve ->
-  nonCanceler <$ runPromise (resolve <<< Right) (resolve <<< Left) (runFn3 encryptImpl a k x)
+encrypt a k x = toAff' errorFromDOMException (runFn3 encryptImpl a k x)
 
 
 
 foreign import decryptImpl :: Fn3 EncryptAlgorithm CryptoKey ArrayBuffer (Promise ArrayBuffer)
 
+-- | https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/decrypt
 decrypt :: EncryptAlgorithm
         -> CryptoKey
         -> ArrayBuffer
-        -> Aff (Maybe ArrayBuffer)
-decrypt a k x = makeAff \resolve ->
-  nonCanceler <$ runPromise (resolve <<< Right <<< Just) (\_ -> resolve (Right Nothing)) (runFn3 decryptImpl a k x)
+        -> Aff ArrayBuffer
+decrypt a k x = toAff' errorFromDOMException (runFn3 decryptImpl a k x)
