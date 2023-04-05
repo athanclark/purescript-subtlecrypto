@@ -1,7 +1,14 @@
 module Crypto.Subtle.Key.Import
-  ( importKey
-  , ImportAlgorithm, rsa, ec, hmac, aes
-  ) where
+  ( ImportAlgorithm
+  , aes
+  , ec
+  , hkdf
+  , hmac
+  , importKey
+  , pbkdf2
+  , rsa
+  )
+  where
 
 import Control.Promise (Promise, toAff')
 import Crypto.Subtle.Constants.AES (AESAlgorithm)
@@ -43,3 +50,9 @@ hmac h = unsafeCoerce {name: "HMAC", hash: h}
 
 aes :: AESAlgorithm -> ImportAlgorithm
 aes a = unsafeCoerce {name: a}
+
+pbkdf2 :: ImportAlgorithm
+pbkdf2 = unsafeCoerce { name: "PBKDF2" }
+
+hkdf :: ImportAlgorithm
+hkdf = unsafeCoerce { name: "HKDF" }

@@ -6,6 +6,7 @@ You can edit this file as you like.
 , dependencies =
   [ "aff"
   , "aff-promise"
+  , "arraybuffer"
   , "arraybuffer-types"
   , "console"
   , "effect"
@@ -18,6 +19,7 @@ You can edit this file as you like.
   , "transformers"
   , "tuples"
   , "unsafe-coerce"
+  , "web-encoding"
   ]
 , packages = ./packages.dhall
 , sources = [ "src/**/*.purs", "test/**/*.purs" ]
