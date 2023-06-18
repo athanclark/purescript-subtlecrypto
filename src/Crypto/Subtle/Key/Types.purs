@@ -1,24 +1,43 @@
 module Crypto.Subtle.Key.Types
-  ( CryptoKeyType
-  , secret, public, private
+  ( CryptoKey
+  , CryptoKeyPair(..)
+  , CryptoKeyType
   , CryptoKeyUsage
-  , encrypt, decrypt, sign, verify, deriveKey, deriveBits, unwrapKey, wrapKey
+  , ExternalFormat
   , allUsages
-  , CryptoKey
-  , getType, getExtractable, getAlgorithm, getUsages
+  , decrypt
+  , deriveBits
+  , deriveKey
+  , encrypt
+  , errorFromDOMException
   , exportKey
-  , CryptoKeyPair (..)
-  , ExternalFormat, raw, pkcs8, spki, jwk
-  ) where
+  , getAlgorithm
+  , getExtractable
+  , getType
+  , getUsages
+  , jwk
+  , pkcs8
+  , private
+  , public
+  , raw
+  , secret
+  , sign
+  , spki
+  , unwrapKey
+  , verify
+  , wrapKey
+  )
+  where
 
-
-import Prelude ((<<<), (<$), class Eq)
-import Data.Either (Either (..))
-import Data.Function.Uncurried (Fn2, runFn2)
+import Prelude ((>>=), class Eq)
+import Control.Monad.Except (runExcept)
+import Control.Promise (Promise, toAff')
 import Data.ArrayBuffer.Types (ArrayBuffer)
-import Foreign (Foreign)
-import Effect.Aff (Aff, makeAff, nonCanceler)
-import Effect.Promise (Promise, runPromise)
+import Data.Either (Either(..))
+import Data.Function.Uncurried (Fn2, runFn2)
+import Effect.Aff (Aff, Error, error)
+import Foreign (Foreign, readString)
+import Foreign.Index (readProp)
 import Unsafe.Coerce (unsafeCoerce)
 
 
@@ -103,8 +122,17 @@ jwk = ExternalFormat "jwk"
 
 foreign import exportKeyImpl :: Fn2 ExternalFormat CryptoKey (Promise ArrayBuffer)
 
+-- | https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/exportKey
 exportKey :: ExternalFormat
           -> CryptoKey
           -> Aff ArrayBuffer
-exportKey f x = makeAff \resolve ->
-  nonCanceler <$ runPromise (resolve <<< Right) (resolve <<< Left) (runFn2 exportKeyImpl f x)
+exportKey f x = toAff' errorFromDOMException (runFn2 exportKeyImpl f x)
+
+-- Most of the Promises throw DOMException, so read the message from the DOMException.
+-- https://developer.mozilla.org/en-US/docs/Web/API/DOMException
+-- Some of the Promises throw TypeError, which also has a message property.
+-- https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypeError
+errorFromDOMException :: Foreign -> Error
+errorFromDOMException x = case runExcept (readProp "message" x >>= readString) of
+  Left _ -> error "Not a DOMException"
+  Right m -> error m
